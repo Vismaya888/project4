@@ -1,0 +1,77 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block head %}
+<script src="{% static 'network/edit_profile.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+<div class="edit-profile-container">
+    <div class="edit-profile-header">
+        <h2>Edit Profile</h2>
+    </div>
+    
+    {% if message %}
+        <div class="alert {% if error %}alert-danger{% else %}alert-success{% endif %} mb-4">
+            {{ message }}
+        </div>
+    {% endif %}
+    
+    <form action="{% url 'edit_profile' %}" method="POST" enctype="multipart/form-data" class="edit-profile-form">
+        {% csrf_token %}
+        <div class="profile-images">
+            <div class="cover-image-section">
+                <label>Cover Photo</label>
+                <div class="cover-preview" style="background-image: url({% if user.cover %}{{ user.cover.url }}{% else %}{% static 'network/images/default_cover.png' %}{% endif %})">
+                    <input type="file" name="cover" id="cover-input" accept="image/*">
+                    <label for="cover-input" class="change-cover">
+                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.83A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z"/>
+                            <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                        </svg>
+                        Change Cover
+                    </label>
+                </div>
+            </div>
+            
+            <div class="profile-pic-section">
+                <label>Profile Picture</label>
+                <div class="profile-pic-preview" style="background-image: url({% if user.profile_pic %}{{ user.profile_pic.url }}{% else %}{% static 'network/images/default_profile.png' %}{% endif %})">
+                    <input type="file" name="profile_pic" id="profile-pic-input" accept="image/*">
+                    <label for="profile-pic-input" class="change-profile-pic">
+                        <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.83A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z"/>
+                            <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                        </svg>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>First Name</label>
+            <input type="text" name="firstname" value="{{ user.first_name }}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" name="lastname" value="{{ user.last_name }}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label>Bio</label>
+            <textarea name="bio" class="form-control" rows="3">{{ user.bio }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" value="{{ user.email }}" class="form-control" required>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn btn-light" onclick="window.location.href='{% url 'profile' user.username %}'">Cancel</button>
+            <button type="submit" class="btn btn-success">Save</button>
+        </div>
+    </form>
+</div>
+{% endblock %} 

@@ -1,0 +1,74 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div class="chat-container">
+    <div class="chat-sidebar">
+        <div class="chat-sidebar-header">
+            <h4>Messages</h4>
+        </div>
+        <div class="chat-users">
+            {% for chat_user in chat_users %}
+                <div class="chat-user {% if chat_user.username == selected_user.username %}active{% endif %}" 
+                     onclick="window.location.href='{% url 'chat_room' chat_user.username %}'"
+                     data-username="{{ chat_user.username }}">
+                    <div class="small-profilepic" style="background-image: url({{ chat_user.profile_pic.url }})"></div>
+                    <div class="chat-user-info">
+                        <div class="chat-user-name">{{ chat_user.first_name }} {{ chat_user.last_name }}</div>
+                        <div class="chat-user-username grey">@{{ chat_user.username }}</div>
+                        {% if chat_user.last_message %}
+                            <div class="chat-preview">{{ chat_user.last_message|truncatechars:30 }}</div>
+                            <div class="chat-time">{{ chat_user.last_message_time|timesince }} ago</div>
+                        {% endif %}
+                    </div>
+                    {% if chat_user.unread_count > 0 %}
+                        <div class="unread-badge">{{ chat_user.unread_count }}</div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="no-chats">
+                    <p>No conversations yet</p>
+                    <small class="grey">Start a new conversation from any user's profile</small>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="chat-main">
+        {% if selected_user %}
+            <div class="chat-header">
+                <a href="{% url 'profile' selected_user.username %}">
+                    <div class="small-profilepic" style="background-image: url({{ selected_user.profile_pic.url }})"></div>
+                    <div class="chat-header-info">
+                        <div class="chat-header-name">{{ selected_user.first_name }} {{ selected_user.last_name }}</div>
+                        <div class="chat-header-username grey">@{{ selected_user.username }}</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages will be loaded here via JavaScript -->
+            </div>
+
+            <div class="chat-input">
+                <form id="message-form" onsubmit="return sendMessage(event)">
+                    <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
+                    <button type="submit" class="btn btn-success">Send</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="no-chat-selected">
+                <div class="grey">Select a conversation or start a new one</div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<script>
+    // Add this to pass the current user to chat.js
+    const currentUser = "{{ request.user.username }}";
+</script>
+<script src="{% static 'network/chat.js' %}"></script>
+{% endblock %} 
